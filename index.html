@@ -180,115 +180,32 @@
         </div>
     </div>
 
-    <script type="module">
-        // Firebase imports (इन्हें वैसे ही रहने दें)
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, addDoc, onSnapshot, collection, query, where, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Global variables for Firebase
-        let app;
-        let db;
-        let auth;
-        let currentFirebaseUser = null; // Firebase Auth user object
-        let currentUserProfile = null; // User profile data from Firestore
-
-        // DOM Elements... (बाकी DOM एलिमेंट्स वैसे ही रहेंगे)
-        // ...
-
-        // **************** यहाँ अपनी Firebase कॉन्फ़िगरेशन पेस्ट करें ****************
-        // इसे Firebase Console से कॉपी किया गया है
-        const firebaseConfig = {
-            apiKey: "AIzaSyC*********************", // अपनी actual API Key यहाँ पेस्ट करें
-            authDomain: "your-project-id.firebaseapp.com",
-            projectId: "your-project-id",
-            storageBucket: "your-project-id.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:1234567890:web:abcdef1234567890abcdef", // अपनी actual App ID यहाँ पेस्ट करें
-            // measurementId: "G-XXXXXXXXXX" // अगर है तो इसे भी जोड़ें
-        };
-
-        // यह appId आपके Firestore paths में उपयोग होगा (artifacts/{appId}/...)
-        const appId = firebaseConfig.appId;
-        // *******************************************************************
-
-        // --- Utility Functions ---
-        // ... (यह सेक्शन वैसे ही रहेगा)
-
-        // --- Auth Logic ---
-        // ... (यह सेक्शन वैसे ही रहेगा)
-
-        // --- Dashboard & Leave Application Logic ---
-        // ... (यह सेक्शन वैसे ही रहेगा)
+            
 
 
-        // --- Initial Load & Firebase Initialization ---
+           <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
-        // Close modal on button click
-        modalCloseBtn.addEventListener('click', hideMessageModal);
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyBo987XLKfaUBaz84uW5ogL_hI5G90_fro",
+    authDomain: "leave-approval-app-73f2f.firebaseapp.com",
+    projectId: "leave-approval-app-73f2f",
+    storageBucket: "leave-approval-app-73f2f.firebasestorage.app",
+    messagingSenderId: "271181120254",
+    appId: "1:271181120254:web:8aa6e389d3aeea8d89dbaf",
+    measurementId: "G-CEBM2NC95P"
+  };
 
-        window.onload = async () => {
-            // पुरानी लाइन्स को हटा दें या टिप्पणी करें:
-            // const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-            const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-            // अब सीधे firebaseConfig ऑब्जेक्ट का उपयोग करें जो आपने ऊपर पेस्ट किया है
-            if (Object.keys(firebaseConfig).length > 0) {
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                // Listen for authentication state changes
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        currentFirebaseUser = user;
-                        // Fetch user profile from Firestore
-                        currentUserProfile = await getUserProfile(user.uid);
-                        if (currentUserProfile) {
-                            renderDashboard();
-                            // Setup Firestore listeners for data
-                            setupFirestoreListeners();
-                        } else {
-                            // If user exists in Auth but not in Firestore profile (e.g., deleted profile)
-                            console.warn("User profile not found in Firestore for UID:", user.uid);
-                            showMessageModal('Profile Missing', 'Your user profile could not be loaded. Please contact support or re-register.');
-                            await signOut(auth); // Force logout
-                        }
-                    } else {
-                        // User is signed out
-                        currentFirebaseUser = null;
-                        currentUserProfile = null;
-                        authSection.classList.remove('hidden');
-                        dashboardSection.classList.add('hidden');
-                        // Unsubscribe from listeners when logged out
-                        if (unsubscribeMyLeaves) unsubscribeMyLeaves();
-                        if (unsubscribePendingApprovals) unsubscribePendingApprovals();
-                        loginForm.reset(); // Reset login form
-                    }
-                });
-
-                // Attempt to sign in with custom token or anonymously if not already signed in
-                if (!auth.currentUser) {
-                    if (initialAuthToken) {
-                        try {
-                            await signInWithCustomToken(auth, initialAuthToken);
-                            console.log("Signed in with custom token.");
-                        } catch (error) {
-                            console.error("Error signing in with custom token:", error);
-                            await signInAnonymously(auth);
-                            console.log("Signed in anonymously.");
-                        }
-                    } else {
-                        await signInAnonymously(auth);
-                        console.log("Signed in anonymously.");
-                    }
-                }
-            } else {
-                console.error("Firebase config not found. Cannot connect to database.");
-                showMessageModal('Error', 'Firebase configuration missing. Please provide Firebase config to enable database features.');
-            }
-        };
-
-    </script>
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
 </body>
 </html>
